@@ -1,6 +1,7 @@
-package aakash.com.voiceandmapassignment
+package aakash.com.voiceandmapassignment.mapView
 
-import android.support.v7.app.AppCompatActivity
+import aakash.com.voiceandmapassignment.R
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 
 import com.google.android.gms.maps.CameraUpdateFactory

@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">VoiceAndMapAssignment</string>
     <string name="title_activity_maps">Map</string>
+    <string name="btn_navigate">Navigate</string>
 </resources>
