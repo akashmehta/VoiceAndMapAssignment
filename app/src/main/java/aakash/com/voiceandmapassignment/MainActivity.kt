@@ -32,6 +32,25 @@ class MainActivity : AppCompatActivity() {
     private lateinit var notificationManager: NotificationManager
     private val mCompositeDisposable = CompositeDisposable()
 
+    private fun dummyMethod() {
+        btnCloseApp.setOnClickListener {
+            mCompositeDisposable.dispose()
+            System.exit(0)
+        }
+        btnMuteDevice.setOnClickListener {
+            val mode = this.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                notificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_NONE)
+            } else {
+                mode.ringerMode = AudioManager.RINGER_MODE_SILENT
+            }
+        }
+        btnNormal.setOnClickListener {
+            val mode = this.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+            mode.ringerMode = AudioManager.RINGER_MODE_NORMAL
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -39,6 +58,7 @@ class MainActivity : AppCompatActivity() {
         setupSpeechRecognizer()
         setupAnimation()
         setupVoiceButtonEvent()
+        dummyMethod()
     }
 
     private fun setupAnimation() {
