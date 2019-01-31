@@ -1,7 +1,8 @@
 package aakash.com.voiceandmapassignment.mapView
 
 import aakash.com.voiceandmapassignment.R
-import androidx.appcompat.app.AppCompatActivity
+import aakash.com.voiceandmapassignment.common.util.BaseActivity
+import aakash.com.voiceandmapassignment.common.util.RxSearchObs
 import android.os.Bundle
 
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -10,8 +11,10 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.jakewharton.rxbinding3.view.clicks
+import kotlinx.android.synthetic.main.activity_maps.*
 
-class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
+class MapsActivity : BaseActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
 
@@ -19,9 +22,25 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        setupToolbar()
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+    }
+
+    private fun setupToolbar() {
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        compositeDisposable.add(ivSearch.clicks().subscribe({ it ->
+            etSearch.requestFocus()
+            RxSearchObs.fromView(etSearch).skipWhile {
+                it.length < 3
+            }.subscribe {
+
+            }
+        }, {
+            it.printStackTrace()
+        }))
     }
 
     /**

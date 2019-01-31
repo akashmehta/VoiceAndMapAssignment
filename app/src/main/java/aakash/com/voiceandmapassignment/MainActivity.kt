@@ -1,10 +1,10 @@
 package aakash.com.voiceandmapassignment
 
+import aakash.com.voiceandmapassignment.common.util.BaseActivity
 import aakash.com.voiceandmapassignment.mapView.MapsActivity
 import android.Manifest
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
@@ -13,7 +13,6 @@ import android.view.MotionEvent
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import com.jakewharton.rxbinding3.view.touches
-import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 import android.content.pm.PackageManager
@@ -23,14 +22,13 @@ import android.media.AudioManager
 import android.app.NotificationManager
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
 
     private lateinit var speechRecognizer: SpeechRecognizer
     private lateinit var speechRecognizerIntent: Intent
     private lateinit var shrinkAnimation: Animation
     private lateinit var expandAnimation: Animation
     private lateinit var notificationManager: NotificationManager
-    private val mCompositeDisposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,7 +54,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        mCompositeDisposable.dispose()
         speechRecognizer.destroy()
     }
 
@@ -86,7 +83,7 @@ class MainActivity : AppCompatActivity() {
     private var isStarted: Boolean = false
 
     private fun setupVoiceButtonEvent() {
-        mCompositeDisposable.add(ivVoiceInput.touches().subscribe(
+        compositeDisposable.add(ivVoiceInput.touches().subscribe(
             {
                 when (it.action) {
                     MotionEvent.ACTION_DOWN -> {
@@ -148,7 +145,7 @@ class MainActivity : AppCompatActivity() {
                         tvOutputText.text = matches[0]
                         when (matches[0].toLowerCase()) {
                             "close app" -> {
-                                mCompositeDisposable.dispose()
+                                compositeDisposable.dispose()
                                 System.exit(0)
                             }
                             "silent device" -> {
