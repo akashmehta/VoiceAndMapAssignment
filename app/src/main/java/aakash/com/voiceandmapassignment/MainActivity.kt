@@ -20,7 +20,7 @@ import androidx.core.content.ContextCompat
 import android.os.Build
 import android.media.AudioManager
 import android.app.NotificationManager
-
+import com.jakewharton.rxbinding3.view.clicks
 
 class MainActivity : BaseActivity() {
 
@@ -34,9 +34,16 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         checkPermission()
+        setupClicks()
         setupSpeechRecognizer()
         setupAnimation()
         setupVoiceButtonEvent()
+    }
+
+    private fun setupClicks() {
+        compositeDisposable.add(btnNavigate.clicks().subscribe {
+            startActivity(Intent(this@MainActivity, MapsActivity::class.java))
+        })
     }
 
     private fun setupAnimation() {

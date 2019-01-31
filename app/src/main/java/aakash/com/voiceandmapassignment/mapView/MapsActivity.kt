@@ -3,7 +3,13 @@ package aakash.com.voiceandmapassignment.mapView
 import aakash.com.voiceandmapassignment.R
 import aakash.com.voiceandmapassignment.common.util.BaseActivity
 import aakash.com.voiceandmapassignment.common.util.RxSearchObs
+import android.annotation.SuppressLint
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
 import android.os.Bundle
+import android.view.MenuItem
+import android.view.Window
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -14,15 +20,45 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.jakewharton.rxbinding3.view.clicks
 import kotlinx.android.synthetic.main.activity_maps.*
 
-class MapsActivity : BaseActivity(), OnMapReadyCallback {
-
+class MapsActivity : BaseActivity(), OnMapReadyCallback, LocationListener {
     private lateinit var mMap: GoogleMap
+    private lateinit var mLocationManager: LocationManager
+
+    companion object {
+        private const val LOCATION_REFRESH_DISTANCE : Float = 10.0f
+        private const val LOCATION_REFRESH_TIME : Long = 10L
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        requestWindowFeature(Window.FEATURE_NO_TITLE)
         setContentView(R.layout.activity_maps)
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         setupToolbar()
+        setupLocation()
+        setupMapFragment()
+    }
+    override fun onLocationChanged(location: Location?) {
+        location?.let {
+            setMarker(it.latitude, it.longitude)
+        }
+    }
+
+    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
+
+    override fun onProviderEnabled(provider: String?) {}
+
+    override fun onProviderDisabled(provider: String?) {}
+
+    @SuppressLint("MissingPermission")
+    private fun setupLocation() {
+        mLocationManager = getSystemService(LOCATION_SERVICE) as LocationManager
+        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,
+            LOCATION_REFRESH_DISTANCE, this)
+    }
+
+    @Suppress("CAST_NEVER_SUCCEEDS")
+    private fun setupMapFragment() {
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -54,10 +90,22 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
      */
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
+    }
 
-        // Add a marker in Sydney and move the camera
-        val sydney = LatLng(-34.0, 151.0)
-        mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+    private fun setMarker(lat : Double, lng: Double) {
+        val location = LatLng(lat, lng)
+        mMap.addMarker(MarkerOptions().position(location).title("Marker in Sydney"))
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(location))
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        item?.let {
+            when (it.itemId) {
+                android.R.id.home -> {
+                    super.onBackPressed()
+                }
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

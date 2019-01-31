@@ -12,6 +12,7 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
     <application
             android:allowBackup="true"
@@ -36,7 +37,8 @@
 
         <activity
                 android:name=".mapView.MapsActivity"
-                android:label="@string/title_activity_maps">
+                android:label="@string/title_activity_maps"
+                android:theme="@style/NoActionBarTheme">
         </activity>
         <activity android:name=".MainActivity">
             <intent-filter>

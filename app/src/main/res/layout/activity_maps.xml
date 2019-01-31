@@ -7,29 +7,31 @@
     <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:background="@color/colorPrimary"
+            android:layout_height="?attr/actionBarSize">
         <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-            <EditText
+            <androidx.appcompat.widget.AppCompatEditText
                     android:id="@+id/etSearch"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    tools:ignore="Autofill,LabelFor,TextFields"/>
+                    android:layout_toStartOf="@id/ivSearch"
+                    tools:ignore="Autofill,LabelFor,TextFields"
+                    android:textColor="@android:color/white"
+                    android:layout_toLeftOf="@id/ivSearch"/>
             <ImageView
                     android:id="@+id/ivSearch"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                    android:layout_width="@dimen/dimen_35"
+                    android:layout_height="@dimen/dimen_35"
+                    android:padding="@dimen/dimen_5"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
                     android:src="@drawable/ic_action_search"
-                    tools:ignore="ContentDescription"/>
+                    tools:ignore="ContentDescription"
+                    android:layout_alignParentRight="true"/>
         </RelativeLayout>
     </androidx.appcompat.widget.Toolbar>
-    <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvSearchResults"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-    </androidx.recyclerview.widget.RecyclerView>
     <fragment
             xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_below="@id/toolbar"
@@ -38,4 +40,10 @@
             android:id="@+id/map"
             tools:context=".mapView.MapsActivity"
             android:name="com.google.android.gms.maps.SupportMapFragment"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvSearchResults"
+            android:layout_below="@id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 </RelativeLayout>
