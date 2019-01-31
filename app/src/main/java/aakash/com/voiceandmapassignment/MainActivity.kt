@@ -1,6 +1,8 @@
 package aakash.com.voiceandmapassignment
 
+import aakash.com.voiceandmapassignment.mapView.MapsActivity
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -17,13 +19,17 @@ import java.util.*
 import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
 import android.os.Build
+import android.media.AudioManager
+import android.app.NotificationManager
+
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var speechRecognizer: SpeechRecognizer
     private lateinit var speechRecognizerIntent: Intent
-    private lateinit var shrinkAnimation : Animation
+    private lateinit var shrinkAnimation: Animation
     private lateinit var expandAnimation: Animation
+    private lateinit var notificationManager: NotificationManager
     private val mCompositeDisposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,6 +69,17 @@ class MainActivity : AppCompatActivity() {
             ) {
                 requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO), 100)
             }
+        }
+        notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !notificationManager.isNotificationPolicyAccessGranted) {
+
+            val intent = Intent(
+                android.provider.Settings
+                    .ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS
+            )
+
+            startActivity(intent)
         }
     }
 
@@ -127,8 +144,31 @@ class MainActivity : AppCompatActivity() {
                     val matches = bundle
                         .getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
 
-                    if (matches != null)
+                    if (matches != null) {
                         tvOutputText.text = matches[0]
+                        when (matches[0].toLowerCase()) {
+                            "close app" -> {
+                                mCompositeDisposable.dispose()
+                                System.exit(0)
+                            }
+                            "silent device" -> {
+                                val mode = this@MainActivity.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                    notificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_NONE)
+                                } else {
+                                    mode.ringerMode = AudioManager.RINGER_MODE_SILENT
+                                }
+
+                            }
+                            "enable sound" -> {
+                                val mode = this@MainActivity.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+                                mode.ringerMode = AudioManager.RINGER_MODE_NORMAL
+                            }
+                            "navigate to map" -> {
+                                startActivity(Intent(this@MainActivity, MapsActivity::class.java))
+                            }
+                        }
+                    }
                 }
             }
         })
