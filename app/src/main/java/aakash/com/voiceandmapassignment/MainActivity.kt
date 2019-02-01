@@ -21,6 +21,7 @@ import androidx.core.content.ContextCompat
 import android.os.Build
 import android.media.AudioManager
 import android.app.NotificationManager
+import com.jakewharton.rxbinding3.view.clicks
 
 
 class MainActivity : AppCompatActivity() {
@@ -39,6 +40,17 @@ class MainActivity : AppCompatActivity() {
         setupSpeechRecognizer()
         setupAnimation()
         setupVoiceButtonEvent()
+        setupClick()
+    }
+
+    private fun setupClick() {
+        mCompositeDisposable.add(btnNavigate.clicks().subscribe(
+            {
+                startActivity(Intent(this@MainActivity, MapsActivity::class.java))
+            }, {
+                it.printStackTrace()
+            }
+        ))
     }
 
     private fun setupAnimation() {

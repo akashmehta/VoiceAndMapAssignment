@@ -1,44 +1,100 @@
 package aakash.com.voiceandmapassignment.mapView
 
 import aakash.com.voiceandmapassignment.R
-import androidx.appcompat.app.AppCompatActivity
+import aakash.com.voiceandmapassignment.common.util.BaseActivity
+import com.here.android.mpa.common.OnEngineInitListener
+import com.here.android.mpa.mapping.SupportMapFragment
 import android.os.Bundle
+import com.here.android.mpa.common.GeoPosition
+import com.here.android.mpa.common.PositioningManager
+import com.here.android.mpa.mapping.Map
+import java.lang.ref.WeakReference
 
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
+class MapsActivity : BaseActivity() {
 
-class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
+    private var mapView: Map? = null
+    private var isPaused = false
+    private var posManager = PositioningManager.getInstance()
+    private var positionListener: WeakReference<PositioningManager.OnPositionChangedListener>? = null
+    override fun onPause() {
+        if (posManager != null) {
+            posManager.stop()
+        }
+        super.onPause()
+        isPaused = true
+    }
 
-    private lateinit var mMap: GoogleMap
+    override fun onResume() {
+        super.onResume()
+        isPaused = false
+        if (posManager != null) {
+            posManager.start(
+                PositioningManager.LocationMethod.GPS_NETWORK
+            )
+        }
+    }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onDestroy() {
+        super.onDestroy()
+        if (posManager != null) {
+            // Cleanup
+            positionListener?.let {
+                posManager.removeListener(
+                    it.get()
+                )
+            }
+        }
+        mapView = null
+    }
+
+    public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_maps)
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        val mapFragment = supportFragmentManager
-            .findFragmentById(R.id.map) as SupportMapFragment
-        mapFragment.getMapAsync(this)
+        setContentView(R.layout.activity_map)
+        setupMapFragment()
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
-    override fun onMapReady(googleMap: GoogleMap) {
-        mMap = googleMap
+    private fun setupPositionListener() {
+        positionListener = WeakReference<PositioningManager.OnPositionChangedListener>(object :
+            PositioningManager.OnPositionChangedListener {
+            override fun onPositionFixChanged(
+                p0: PositioningManager.LocationMethod?,
+                p1: PositioningManager.LocationStatus?
+            ) {
 
-        // Add a marker in Sydney and move the camera
-        val sydney = LatLng(-34.0, 151.0)
-        mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+            }
+
+            override fun onPositionUpdated(
+                method: PositioningManager.LocationMethod?,
+                position: GeoPosition?, isMapMathced: Boolean
+            ) {
+                if (!isPaused) {
+                    mapView?.setCenter(position?.coordinate, Map.Animation.NONE)
+                }
+            }
+        })
+
+        posManager.addListener(
+            positionListener
+        )
     }
+
+    private fun setupMapFragment() {
+        // Search for the Map Fragment
+        val mapFragment = supportFragmentManager.findFragmentById(R.id.mapfragment) as SupportMapFragment
+        // initialize the Map Fragment and
+        // retrieve the map that is associated to the fragment
+
+        mapFragment.init { error ->
+            if (error == OnEngineInitListener.Error.NONE) {
+                // now the map is ready to be used
+                mapView = mapFragment.map
+                setupPositionListener()
+                mapFragment.positionIndicator.isVisible = true
+                // ...
+            } else {
+                println("ERROR: Cannot initialize SupportMapFragment")
+            }
+        }
+    }
+
 }
