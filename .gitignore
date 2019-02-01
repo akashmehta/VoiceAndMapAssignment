@@ -6,4 +6,4 @@
 /build
 /captures
 .externalNativeBuild
-.app/src/main/res/values/credentials_string.xml
+/app/src/main/res/values/credentials_string.xml
