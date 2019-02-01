@@ -2,11 +2,9 @@ package aakash.com.voiceandmapassignment.mapView
 
 import aakash.com.voiceandmapassignment.R
 import aakash.com.voiceandmapassignment.common.util.BaseActivity
-import com.here.android.mpa.common.OnEngineInitListener
 import com.here.android.mpa.mapping.SupportMapFragment
 import android.os.Bundle
-import com.here.android.mpa.common.GeoPosition
-import com.here.android.mpa.common.PositioningManager
+import com.here.android.mpa.common.*
 import com.here.android.mpa.mapping.Map
 import java.lang.ref.WeakReference
 
@@ -14,11 +12,11 @@ class MapsActivity : BaseActivity() {
 
     private var mapView: Map? = null
     private var isPaused = false
-    private var posManager = PositioningManager.getInstance()
+    private var posManager : PositioningManager? = null
     private var positionListener: WeakReference<PositioningManager.OnPositionChangedListener>? = null
     override fun onPause() {
         if (posManager != null) {
-            posManager.stop()
+            posManager!!.stop()
         }
         super.onPause()
         isPaused = true
@@ -28,7 +26,7 @@ class MapsActivity : BaseActivity() {
         super.onResume()
         isPaused = false
         if (posManager != null) {
-            posManager.start(
+            posManager!!.start(
                 PositioningManager.LocationMethod.GPS_NETWORK
             )
         }
@@ -39,7 +37,7 @@ class MapsActivity : BaseActivity() {
         if (posManager != null) {
             // Cleanup
             positionListener?.let {
-                posManager.removeListener(
+                posManager?.removeListener(
                     it.get()
                 )
             }
@@ -50,11 +48,16 @@ class MapsActivity : BaseActivity() {
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
-        setupMapFragment()
+        MapEngine.getInstance().init(ApplicationContext(this)) {
+            if (it == OnEngineInitListener.Error.NONE) {
+                posManager= PositioningManager.getInstance()
+                setupMapFragment()
+            }
+        }
     }
 
     private fun setupPositionListener() {
-        positionListener = WeakReference<PositioningManager.OnPositionChangedListener>(object :
+        positionListener = WeakReference(object :
             PositioningManager.OnPositionChangedListener {
             override fun onPositionFixChanged(
                 p0: PositioningManager.LocationMethod?,
@@ -73,7 +76,7 @@ class MapsActivity : BaseActivity() {
             }
         })
 
-        posManager.addListener(
+        posManager?.addListener(
             positionListener
         )
     }

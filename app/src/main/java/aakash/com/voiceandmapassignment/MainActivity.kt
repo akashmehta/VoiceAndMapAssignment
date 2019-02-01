@@ -79,7 +79,12 @@ class MainActivity : AppCompatActivity() {
                     Manifest.permission.RECORD_AUDIO
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
-                requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO), 100)
+                requestPermissions(
+                    arrayOf(
+                        Manifest.permission.RECORD_AUDIO, Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    ), 100
+                )
             }
         }
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
