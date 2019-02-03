@@ -61,7 +61,10 @@
                 </action>
             </intent-filter>
         </service>
-
+        <meta-data
+                android:name="INTENT_NAME"
+                android:value="HereMapIntent" />
+        <service android:name=".common.services.ForegroundService" />
     </application>
 
 </manifest>

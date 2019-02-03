@@ -19,12 +19,12 @@
                     android:id="@+id/etSearch"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_toStartOf="@id/ivSearch"
+                    android:layout_toStartOf="@id/ivNavigate"
                     tools:ignore="Autofill,LabelFor,TextFields"
                     android:textColor="@android:color/white"
-                    android:layout_toLeftOf="@id/ivSearch"/>
+                    android:layout_toLeftOf="@id/ivNavigate"/>
             <ImageView
-                    android:id="@+id/ivSearch"
+                    android:id="@+id/ivNavigate"
                     android:layout_width="@dimen/dimen_35"
                     android:layout_height="@dimen/dimen_35"
                     android:padding="@dimen/dimen_5"

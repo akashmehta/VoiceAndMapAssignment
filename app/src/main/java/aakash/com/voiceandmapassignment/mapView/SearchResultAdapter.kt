@@ -11,7 +11,7 @@ import io.reactivex.disposables.CompositeDisposable
 
 class SearchResultAdapter(private val itemList: ArrayList<String>,
                           private val compositeDisposable: CompositeDisposable,
-                          private val onItemClick : () -> Unit) :
+                          private val onItemClick : (position: Int) -> Unit) :
     RecyclerView.Adapter<SearchResultAdapter.SearchHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchHolder {
         return SearchHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_search_results, parent, false))
@@ -23,7 +23,7 @@ class SearchResultAdapter(private val itemList: ArrayList<String>,
         (holder.itemView as TextView).text = itemList[position]
         compositeDisposable.add(
             holder.itemView.clicks().subscribe {
-                onItemClick()
+                onItemClick(position)
             }
         )
     }
