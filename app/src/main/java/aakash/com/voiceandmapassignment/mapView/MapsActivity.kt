@@ -60,6 +60,13 @@ class MapsActivity : BaseActivity() {
         )
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        mapView = null
+        cleanUp()
+        finish()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         // Cleanup
